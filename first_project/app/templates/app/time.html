@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Current time</title>
+</head>
+<body>
+    <h1>Текущее время:</h1>
+
+    <p id="current-time"></p>
+
+    <script> // Thanks, ChatGPT :)
+        function updateTime() {
+            var currentDate = new Date();
+
+            var year = currentDate.getFullYear();
+            var month = ('0' + (currentDate.getMonth() + 1)).slice(-2);
+            var day = ('0' + currentDate.getDate()).slice(-2);
+            var hours = ('0' + currentDate.getHours()).slice(-2);
+            var minutes = ('0' + currentDate.getMinutes()).slice(-2);
+            var seconds = ('0' + currentDate.getSeconds()).slice(-2);
+
+            var formattedDateTime = year + '-' + month + '-' + day + ' ' + hours + ':' + minutes + ':' + seconds;
+
+            var currentTimeElement = document.getElementById('current-time');
+            currentTimeElement.textContent = formattedDateTime;
+        }
+
+        updateTime();
+        setInterval(updateTime, 1000);
+    </script>
+
+    <a href="{{ home }}">Вернуться на главную</a>
+</body>
+</html>
