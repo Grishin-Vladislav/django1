@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>stations</title>
+</head>
+<body>
+    <style>
+        body {
+            background-color: #fcf8f3;
+        }
+
+
+        /* Style for the entire table */
+        table.dataframe {
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        /* Header row style */
+        table.dataframe th {
+            background-color: #698474;
+            text-align: left;
+            font-weight: bold;
+            padding: 8px;
+            border-bottom: 2px solid #ddd;
+        }
+
+        /* Data rows alternating background */
+        table.dataframe tbody tr:nth-child(even) {
+            background-color: #ffd3b6;
+        }
+
+        /* Data cells style */
+        table.dataframe td {
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        /* Highlighted row on hover */
+        table.dataframe tbody tr:hover {
+            background-color: #ffaaa5;
+        }
+
+        /* Container for the pagination block */
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background-color: rgba(255, 170, 165, 0.7);
+            padding: 10px 0;
+            box-shadow: 0px -2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Style for the buttons */
+        .pagination-container button {
+            padding: 8px 15px;
+            margin: 0 5px;
+            background-color: #1bd163;
+            color: #000000;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        /* Style for the page number */
+        .pagination-container p {
+            margin: 0 10px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .table-container {
+            margin-bottom: 60px;
+        }
+    </style>
+
+    <div class="table-container">
+        {{ page|safe }}
+    </div>
+
+    <div class="pagination-container">
+        {% if previous %}
+
+            {% if min100 %}
+            <button onclick="window.location.href='?page={{ min100 }}&per_page={{ per_page }}'">-100</button>
+            {% endif %}
+
+            {% if min10 %}
+            <button onclick="window.location.href='?page={{ min10 }}&per_page={{ per_page }}'">-10</button>
+            {% endif %}
+
+            <button onclick="window.location.href='?page={{ previous }}&per_page={{ per_page }}'">-1</button>
+
+        {% endif %}
+
+        <p>{{ page_number }}</p>
+
+        {% if next %}
+
+            <button onclick="window.location.href='?page={{ next }}&per_page={{ per_page }}'">+1</button>
+
+            {% if plus10 %}
+            <button onclick="window.location.href='?page={{ plus10 }}&per_page={{ per_page }}'">+10</button>
+            {% endif %}
+
+            {% if plus100 %}
+            <button onclick="window.location.href='?page={{ plus100 }}&per_page={{ per_page }}'">+100</button>
+            {% endif %}
+
+        {% endif %}
+    </div>
+</body>
+</html>
