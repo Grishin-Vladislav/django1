@@ -30,16 +30,9 @@ def courses_factory_prepare():
 @pytest.mark.django_db
 def test_get_certain_course(client, courses_factory):
     course = courses_factory()
-    # #
-    #     from django import urls
-    #
-    #     url_resolver = urls.get_resolver(urls.get_urlconf())
-    #     print(url_resolver.namespace_dict.items())
-    #
-    url = reverse('courses-list')
-    response = client.get(
-        f'/api/v1/courses/{course.id}/'
-    )
+
+    url = reverse('students:courses-detail', args=[course.id])
+    response = client.get(url)
 
     assert response.status_code == 200
     assert response.json()['name'] == course.name
@@ -49,7 +42,8 @@ def test_get_certain_course(client, courses_factory):
 def test_get_courses_list(client, courses_factory):
     courses = courses_factory(_quantity=100)
 
-    response = client.get(f'/api/v1/courses/')
+    url = reverse('students:courses-list')
+    response = client.get(url)
 
     assert response.status_code == 200
     for index, course in enumerate(response.json()):
@@ -61,7 +55,8 @@ def test_filter_by_id(client, courses_factory):
     courses = courses_factory(_quantity=10)
 
     for course in courses:
-        response = client.get(f'/api/v1/courses/?id={course.id}')
+        url = reverse('students:courses-list')
+        response = client.get(f'{url}?id={course.id}')
         data = response.json()
 
         assert response.status_code == 200
@@ -74,7 +69,8 @@ def test_filter_by_name(client, courses_factory):
     courses = courses_factory(_quantity=10)
 
     for course in courses:
-        response = client.get(f'/api/v1/courses/?name={course.name}')
+        url = reverse('students:courses-list')
+        response = client.get(f'{url}?name={course.name}')
         data = response.json()
 
         assert response.status_code == 200
@@ -92,8 +88,8 @@ def test_create_course(client, courses_factory_prepare):
             'students': []
         }
 
-        response = client.post('/api/v1/courses/', data=data,
-                               format='json')
+        url = reverse('students:courses-list')
+        response = client.post(url, data=data, format='json')
         assert response.status_code == 201
 
         course_db = Course.objects.filter(name=data['name']).first()
@@ -109,9 +105,8 @@ def test_update_course(client, courses_factory):
     course = courses_factory()
     data = {'name': 'python'}
 
-    response = client.patch(f'/api/v1/courses/{course.id}/',
-                            data=data,
-                            format='json')
+    url = reverse('students:courses-detail', args=[course.id])
+    response = client.patch(url, data=data, format='json')
 
     assert response.status_code == 200
     assert response.json()['name'] == data['name']
@@ -121,7 +116,8 @@ def test_update_course(client, courses_factory):
 def test_destroy_course(client, courses_factory):
     course = courses_factory()
 
-    response = client.delete(f'/api/v1/courses/{course.id}/')
+    url = reverse('students:courses-detail', args=[course.id])
+    response = client.delete(url)
 
     assert response.status_code == 204
     assert Course.objects.count() == 0

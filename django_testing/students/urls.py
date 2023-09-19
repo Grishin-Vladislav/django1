@@ -8,5 +8,5 @@ router.register("courses", CoursesViewSet, basename='courses')
 
 app_name = 'students'
 urlpatterns = [
-    path('', include((router.urls, 'students')))
+    path('', include(router.urls))
 ]
