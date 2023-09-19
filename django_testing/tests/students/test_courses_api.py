@@ -19,6 +19,14 @@ def courses_factory():
     return courses
 
 
+@pytest.fixture
+def courses_factory_prepare():
+    def courses(*args, **kwargs):
+        return baker.prepare(Course, *args, **kwargs)
+
+    return courses
+
+
 @pytest.mark.django_db
 def test_get_certain_course(client, courses_factory):
     course = courses_factory()
@@ -28,7 +36,7 @@ def test_get_certain_course(client, courses_factory):
     #     url_resolver = urls.get_resolver(urls.get_urlconf())
     #     print(url_resolver.namespace_dict.items())
     #
-    # url = reverse('students:courses-list')
+    url = reverse('courses-list')
     response = client.get(
         f'/api/v1/courses/{course.id}/'
     )
@@ -75,25 +83,25 @@ def test_filter_by_name(client, courses_factory):
 
 
 @pytest.mark.django_db
-def test_create_course():
-    c_id = 123
-    c_name = 'python'
+def test_create_course(client, courses_factory_prepare):
+    courses = courses_factory_prepare(_quantity=2)
 
-    stud = Student(id=1, name='stud1', birth_date='2010-10-10')
-    stud.save()
+    for course in courses:
+        data = {
+            'name': course.name,
+            'students': []
+        }
 
-    course = Course(id=c_id, name=c_name)
-    course.save()
-    course.students.set([stud])
+        response = client.post('/api/v1/courses/', data=data,
+                               format='json')
+        assert response.status_code == 201
 
-    query = Course.objects.all()
-    course = query[0]
+        course_db = Course.objects.filter(name=data['name']).first()
 
-    assert len(query) == 1
-    assert course.id == c_id
-    assert course.name == c_name
-    assert course.students.count() == 1
-    assert isinstance(course.students.first(), Student)
+        assert course_db
+        assert list(course_db.students.all()) == data['students']
+
+    assert Course.objects.count() == len(courses)
 
 
 @pytest.mark.django_db
